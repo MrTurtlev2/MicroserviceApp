@@ -1,0 +1,72 @@
+version: '3.8'
+ 
+services:
+  microservicerestapi:
+    build: ./MicroserviceRestApi
+    container_name: microservicerestapi
+    ports:
+      - "5000:80"
+    depends_on:
+      - database
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Server=database;Database=FinancialData;User Id=sa;Password=Your_password123;
+    networks:
+      app-network:
+        aliases:
+          - microservicerestapi
+
+  microservicepdfgenerator:
+    build: ./MicroservicePdfGenerator
+    container_name: microservicepdfgenerator
+    depends_on:
+      - database
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Server=database;Database=FinancialData;User Id=sa;Password=Your_password123;
+      - REST_API_URL=http://microservicerestapi/
+    volumes:
+      - reports-data:/app/reports
+    networks:
+      app-network:
+        aliases:
+          - microservicepdfgenerator
+
+  microserviceweb:
+    build: ./MicroserviceWeb
+    container_name: microserviceweb
+    ports:
+      - "8080:80"
+    depends_on:
+      - microservicepdfgenerator
+    volumes:
+      - reports-data:/app/reports
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - REST_API_URL=http://microservicerestapi/
+    networks:
+      app-network:
+        aliases:
+          - microserviceweb
+
+  database:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: database
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Your_password123
+    ports:
+      - "1433:1433"
+    volumes:
+      - db-data:/var/opt/mssql
+    networks:
+      app-network:
+        aliases:
+          - database  
+
+networks:
+  app-network:
+
+volumes:
+  db-data:
+  reports-data:
