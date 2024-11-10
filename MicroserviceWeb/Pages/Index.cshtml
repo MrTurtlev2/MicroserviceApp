@@ -3,8 +3,37 @@
 @{
     ViewData["Title"] = "Home page";
 }
+@section Scripts {
+    <script>
+        document.getElementById('getWeatherButton').addEventListener('click', async function () {
+            try {
+                const response = await fetch('http://localhost:5000/api/GetWeatherData');
 
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+
+                const data = await response.json();
+                console.log("response =====");
+                console.log(data[0]); 
+
+                document.getElementById('weatherData').innerHTML = `
+                        <p>date: ${data[0].date}</p>
+                        <p>summary: ${data[0].summary}</p>
+                    `;
+            } catch (error) {
+                console.error('Błąd:', error);
+                document.getElementById('weatherData').innerHTML = '<p>Wystąpił błąd podczas pobierania danych pogodowych.</p>';
+            }
+        });
+    </script>
+
+}
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <button id="getWeatherButton">Pobierz dane pogodowe</button>
+
+    <div id="weatherData"></div>
 </div>
+  

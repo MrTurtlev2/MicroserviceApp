@@ -1,9 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Http;
 
 namespace MicroserviceRestApi.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("/api")] 
     public class WeatherForecastController : ControllerBase
     {
         private static readonly string[] Summaries = new[]
@@ -12,13 +13,16 @@ namespace MicroserviceRestApi.Controllers
         };
 
         private readonly ILogger<WeatherForecastController> _logger;
+        private readonly HttpClient _httpClient;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, HttpClient httpClient)
         {
             _logger = logger;
+            _httpClient = httpClient;
         }
 
-        [HttpGet(Name = "GetWeatherForecast")]
+        [HttpGet("GetWeatherData")]
         public IEnumerable<WeatherForecast> Get()
         {
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
@@ -29,5 +33,21 @@ namespace MicroserviceRestApi.Controllers
             })
             .ToArray();
         }
+
+        [HttpGet("GetWeatherData1")] 
+        public async Task<IActionResult> GetWeatherData()
+        {
+            var response = await _httpClient.GetAsync("http://weatherapi/weather");
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                return Ok(content);
+            }
+            else
+            {
+                return StatusCode((int)response.StatusCode, "errorduring data fetxh");
+            }
+        }
+
     }
 }
