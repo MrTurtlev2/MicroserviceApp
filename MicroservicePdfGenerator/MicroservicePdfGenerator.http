@@ -1,0 +1,6 @@
+@MicroservicePdfGenerator_HostAddress = http://localhost:5082
+
+GET {{MicroservicePdfGenerator_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
