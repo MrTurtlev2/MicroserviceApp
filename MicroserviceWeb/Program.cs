@@ -1,3 +1,5 @@
+using System.Net;
+
 namespace MicroserviceWeb
 {
     public class Program
@@ -5,7 +7,10 @@ namespace MicroserviceWeb
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
+            builder.WebHost.ConfigureKestrel(options =>
+            {
+                options.Listen(IPAddress.Any, 80);
+            });
             // Add services to the container.
             builder.Services.AddRazorPages();
 

@@ -1,4 +1,6 @@
 
+using System.Net;
+
 namespace MicroserviceRestApi
 {
     public class Program
@@ -6,7 +8,10 @@ namespace MicroserviceRestApi
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
+            builder.WebHost.ConfigureKestrel(options =>
+            {
+                options.Listen(IPAddress.Any, 80);
+            });
             // Add services to the container.
 
             builder.Services.AddControllers();
@@ -17,11 +22,11 @@ namespace MicroserviceRestApi
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
+            //if (app.Environment.IsDevelopment())
+           // {
                 app.UseSwagger();
                 app.UseSwaggerUI();
-            }
+          //  }
 
             app.UseHttpsRedirection();
 
