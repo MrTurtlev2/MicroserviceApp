@@ -1,0 +1,109 @@
+﻿@page
+@model ExersiceModel
+@{
+    ViewData["Title"] = "ExersiceModel";
+}
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tableBody = document.querySelector('table tbody');
+            const addRowButton = document.querySelector('.add-row');
+            const saveChangesButton = document.querySelector('.save-changes');
+
+            // Function to add a new row
+            addRowButton.addEventListener('click', () => {
+                const newRow = document.createElement('tr');
+                newRow.innerHTML = `
+                    <td>${tableBody.rows.length + 1}</td>
+                    <td><input type="text" placeholder="Ćwiczenie"></td>
+                    <td><input type="text" placeholder="Obciążenie"></td>
+                    <td><input type="text" placeholder="Powtórzenia"></td>
+                    <td><input type="text" placeholder="Uwagi"></td>
+                    <td><button class="delete-row">Usuń</button></td>
+                `;
+                tableBody.appendChild(newRow);
+                attachDeleteHandlers();
+            });
+
+            // Function to attach delete handlers to buttons
+            function attachDeleteHandlers() {
+                document.querySelectorAll('.delete-row').forEach(button => {
+                    button.addEventListener('click', () => {
+                        button.parentElement.parentElement.remove();
+                        updateRowNumbers();
+                    });
+                });
+            }
+
+            // Function to update row numbers
+            function updateRowNumbers() {
+                const rows = tableBody.querySelectorAll('tr');
+                rows.forEach((row, index) => {
+                    row.firstElementChild.textContent = index + 1;
+                });
+            }
+
+            // Save changes (for demonstration purposes, just log the table data)
+            saveChangesButton.addEventListener('click', () => {
+                const data = [];
+                const rows = tableBody.querySelectorAll('tr');
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    data.push({
+                         part: cells[0].textContent,
+                        exercise: cells[1].querySelector('input').value,
+                        weight: cells[2].querySelector('input').value,
+                        reps: cells[3].querySelector('input').value,
+                        notes: cells[4].querySelector('input').value,
+                    });
+                });
+                console.log('Saved Data:', data);
+                alert('Zmiany zostały zapisane!');
+            });
+
+            attachDeleteHandlers();
+        });
+    </script>
+     
+}
+<div class="container">
+    <header>
+        <h1>Plany Treningowe</h1>
+    </header>
+    <section class="training-info">
+        <div class="info-box">
+            <h3>Tytuł: Redukcja tkanki tłuszczowej</h3>
+            <p>Podopieczny: Adam Nowak</p>
+            <p>Termin: 2023-05-16</p>
+        </div>
+    </section>
+    <section class="training-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Część</th>
+                    <th>Ćwiczenie</th>
+                    <th>Obciążenie</th>
+                    <th>Powtórzenia</th>
+                    <th>Uwagi</th>
+                    <th>Akcje</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td><input type="text" value="Przysiad ze sztangą"></td>
+                    <td><input type="text" value="50 kg"></td>
+                    <td><input type="text" value="12"></td>
+                    <td><input type="text" value="Technika poprawna"></td>
+                    <td><button class="delete-row">Usuń</button></td>
+                </tr>
+            </tbody>
+        </table>
+        <button class="add-row">Dodaj ćwiczenie</button>
+        <button class="save-changes">Zapisz zmiany</button>
+    </section>
+</div>
+
+</div>
+  

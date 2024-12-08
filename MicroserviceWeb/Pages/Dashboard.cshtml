@@ -1,0 +1,36 @@
+﻿@page
+@model Dashboard  
+@{
+    ViewData["Title"] = "Dashboard";
+    var users = new[]
+         {
+        new { Name = "Jan Kowalski", ImageUrl = "~/images/jan.jpg", Info = "Trener personalny, 5 lat doświadczenia" },
+        new { Name = "Anna Nowak", ImageUrl = "~/images/anna.jpg", Info = "Dietetyk, specjalista ds. żywienia" },
+        new { Name = "Piotr Zieliński", ImageUrl = "~/images/piotr.jpg", Info = "Fizjoterapeuta, specjalista od urazów sportowych" }
+    };
+}
+@section Scripts {
+    <script>
+       
+    </script>
+     
+}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="~/css/dashboard.css" />
+</head>
+<div class="dashboard-container">
+    <h1>Dashboard</h1>
+    <div class="tiles-container">
+        @foreach (var user in users)
+        {
+            <div class="tile">
+                <img src="@Url.Content(user.ImageUrl)" alt="@user.Name" class="user-image" />
+                <h3>@user.Name</h3>
+                <p>@user.Info</p>
+            </div>
+        }
+    </div>
+</div>
