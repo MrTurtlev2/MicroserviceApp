@@ -1,5 +1,10 @@
 # MicroserviceApp
 
+# Database
+## create migration
+dotnet ef migrations add NAME
+## apply migration
+dotnet ef database update
 
 
 # commands for docker

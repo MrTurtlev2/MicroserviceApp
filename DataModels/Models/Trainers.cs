@@ -7,6 +7,5 @@ public class Trainers
     public required string Email { get; set; }
     public required string Password { get; set; } 
 
-    // Relacja: Jeden trener ma wielu podopiecznych
-    public ICollection<Pupils>? Pupils { get; set; }
+    public ICollection<Pupils>? PupilsList { get; set; }
 } 

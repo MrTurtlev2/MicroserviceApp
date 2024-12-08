@@ -10,6 +10,7 @@ namespace DataModels
          
         public DbSet<Trainers> Trainers { get; set; }
         public DbSet<Pupils> Pupils { get; set; }
+        public DbSet<Exercises> Exercises { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -17,7 +18,7 @@ namespace DataModels
 
             // Konfiguracja relacji jeden do wielu
             modelBuilder.Entity<Trainers>()
-                .HasMany(t => t.Pupils)
+                .HasMany(t => t.PupilsList)
                 .WithOne(p => p.Trainer)
                 .HasForeignKey(p => p.TrainerId);
         }

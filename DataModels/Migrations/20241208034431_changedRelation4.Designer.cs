@@ -11,8 +11,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataModels.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241208022954_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20241208034431_changedRelation4")]
+    partial class changedRelation4
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -80,7 +80,7 @@ namespace DataModels.Migrations
             modelBuilder.Entity("DataModels.Models.Pupils", b =>
                 {
                     b.HasOne("DataModels.Models.Trainers", "Trainer")
-                        .WithMany("Pupils")
+                        .WithMany("PupilsList")
                         .HasForeignKey("TrainerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -90,7 +90,7 @@ namespace DataModels.Migrations
 
             modelBuilder.Entity("DataModels.Models.Trainers", b =>
                 {
-                    b.Navigation("Pupils");
+                    b.Navigation("PupilsList");
                 });
 #pragma warning restore 612, 618
         }

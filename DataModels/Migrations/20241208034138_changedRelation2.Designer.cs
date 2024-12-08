@@ -2,6 +2,7 @@
 using DataModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,9 +11,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataModels.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241208034138_changedRelation2")]
+    partial class changedRelation2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -20,19 +23,6 @@ namespace DataModels.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("DataModels.Models.Exercises", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Exercises");
-                });
 
             modelBuilder.Entity("DataModels.Models.Pupils", b =>
                 {
@@ -60,7 +50,7 @@ namespace DataModels.Migrations
 
                     b.HasIndex("TrainerId");
 
-                    b.ToTable("Pupils");
+                    b.ToTable("Pupils1");
                 });
 
             modelBuilder.Entity("DataModels.Models.Trainers", b =>
@@ -84,7 +74,7 @@ namespace DataModels.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Trainers");
+                    b.ToTable("Trainers1");
                 });
 
             modelBuilder.Entity("DataModels.Models.Pupils", b =>
