@@ -10,7 +10,7 @@ services:
       - database
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - ConnectionStrings__DefaultConnection=Server=database;Database=FinancialData;User Id=sa;Password=Your_password123;
+      - ConnectionStrings__DefaultConnection=Host=database;Port=5432;Database=GymIoDatabase;Username=postgres;Password=Your_password123;
     networks:
       app-network:
         aliases:
@@ -23,7 +23,7 @@ services:
       - database
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - ConnectionStrings__DefaultConnection=Server=database;Database=FinancialData;User Id=sa;Password=Your_password123;
+      - ConnectionStrings__DefaultConnection=Host=database;Port=5432;Database=GymIoDatabase;Username=postgres;Password=Your_password123;
       - REST_API_URL=http://microservicerestapi/
     volumes:
       - reports-data:/app/reports
@@ -50,19 +50,18 @@ services:
           - microserviceweb
 
   database:
-    image: mcr.microsoft.com/mssql/server:2019-latest
+    image: postgres:15
     container_name: database
     environment:
-      - ACCEPT_EULA=Y
-      - SA_PASSWORD=Your_password123
+      - POSTGRES_DB=GymIoDatabase
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=Your_password123
     ports:
-      - "1433:1433"
+      - "5432:5432"
     volumes:
-      - db-data:/var/opt/mssql
+      - db-data:/var/lib/postgresql/data
     networks:
-      app-network:
-        aliases:
-          - database  
+      - app-network
 
 networks:
   app-network:
