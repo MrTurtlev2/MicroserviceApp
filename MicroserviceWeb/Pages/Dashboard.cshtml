@@ -7,13 +7,21 @@
         new { Name = "Jan Kowalski", ImageUrl = "~/images/jan.jpg", Info = "Trener personalny, 5 lat doświadczenia" },
         new { Name = "Anna Nowak", ImageUrl = "~/images/anna.jpg", Info = "Dietetyk, specjalista ds. żywienia" },
         new { Name = "Piotr Zieliński", ImageUrl = "~/images/piotr.jpg", Info = "Fizjoterapeuta, specjalista od urazów sportowych" }
-    };
+    }; 
 }
 @section Scripts {
     <script>
-       
+        const tiles = document.querySelectorAll('.tile');
+
+        tiles.forEach(tile => {
+            tile.addEventListener('click', function () {
+                const url = this.getAttribute('data-url');
+            
+                window.location.href = 'ExercisesEdit';
+                    console.log('klik')
+            });
+        });
     </script>
-     
 }
 <head>
     <meta charset="UTF-8">

@@ -1,7 +1,7 @@
 ﻿@page
 @model ExersiceModel
 @{
-    ViewData["Title"] = "ExersiceModel";
+    ViewData["Title"] = "ExercisesEdit";
 }
 @section Scripts {
     <script>
@@ -10,7 +10,6 @@
             const addRowButton = document.querySelector('.add-row');
             const saveChangesButton = document.querySelector('.save-changes');
 
-            // Function to add a new row
             addRowButton.addEventListener('click', () => {
                 const newRow = document.createElement('tr');
                 newRow.innerHTML = `
@@ -25,7 +24,6 @@
                 attachDeleteHandlers();
             });
 
-            // Function to attach delete handlers to buttons
             function attachDeleteHandlers() {
                 document.querySelectorAll('.delete-row').forEach(button => {
                     button.addEventListener('click', () => {
@@ -35,7 +33,6 @@
                 });
             }
 
-            // Function to update row numbers
             function updateRowNumbers() {
                 const rows = tableBody.querySelectorAll('tr');
                 rows.forEach((row, index) => {
@@ -43,7 +40,6 @@
                 });
             }
 
-            // Save changes (for demonstration purposes, just log the table data)
             saveChangesButton.addEventListener('click', () => {
                 const data = [];
                 const rows = tableBody.querySelectorAll('tr');
