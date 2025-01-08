@@ -1,5 +1,5 @@
 version: '3.8'
- 
+
 services:
   microservicerestapi:
     build: ./MicroserviceRestApi
@@ -60,6 +60,7 @@ services:
       - "5432:5432"
     volumes:
       - db-data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - app-network
 
