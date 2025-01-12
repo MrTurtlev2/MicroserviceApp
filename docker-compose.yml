@@ -15,6 +15,13 @@ services:
       app-network:
         aliases:
           - microservicerestapi
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: always
 
   microservicepdfgenerator:
     build: ./MicroservicePdfGenerator
@@ -31,6 +38,13 @@ services:
       app-network:
         aliases:
           - microservicepdfgenerator
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: always
 
   microserviceweb:
     build: ./MicroserviceWeb
@@ -40,7 +54,7 @@ services:
     depends_on:
       - microservicepdfgenerator
     volumes:
-      - reports-data:/app/reports
+      - reports-data:/app/reports 
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - REST_API_URL=http://microservicerestapi/
@@ -48,6 +62,13 @@ services:
       app-network:
         aliases:
           - microserviceweb
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: always
 
   database:
     image: postgres:15
@@ -63,6 +84,13 @@ services:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 30s 
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: always
 
 networks:
   app-network:
