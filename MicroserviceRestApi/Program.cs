@@ -1,3 +1,6 @@
+using MicroserviceRestApi.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using System.Net;
 
 namespace MicroserviceRestApi
@@ -33,7 +36,7 @@ namespace MicroserviceRestApi
 
           
             builder.Services.AddHealthChecks();
-
+            builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
             var app = builder.Build();
 
  
