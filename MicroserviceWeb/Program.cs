@@ -30,7 +30,7 @@ namespace MicroserviceWeb
             app.UseAuthorization();
 
             app.MapRazorPages();
-            app.MapHealthChecks("/health");
+            //app.MapHealthChecks("/health");
 
             app.Run();
         }

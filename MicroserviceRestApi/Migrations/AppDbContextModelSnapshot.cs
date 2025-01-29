@@ -2,7 +2,6 @@
 using MicroserviceRestApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,12 +9,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace MicroserviceRestApi.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250129194819_InitialMigration")]
-    partial class InitialMigration
+    [DbContext(typeof(AppDbContext))]
+    partial class AppDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,9 +29,46 @@ namespace MicroserviceRestApi.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Comment")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("PupilsId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Reps")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Weight")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("PupilsId");
+
                     b.ToTable("Exercises");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Comment = "brak",
+                            Label = "Wyciskanie sztangi",
+                            Reps = 5,
+                            Weight = "50"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Comment = "brak",
+                            Label = "Przysiady ze sztanga",
+                            Reps = 12,
+                            Weight = "90"
+                        });
                 });
 
             modelBuilder.Entity("MicroserviceRestApi.Models.Pupils", b =>
@@ -59,9 +93,12 @@ namespace MicroserviceRestApi.Migrations
                     b.Property<int>("TrainerId")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("TrainersId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("TrainerId");
+                    b.HasIndex("TrainersId");
 
                     b.ToTable("Pupils");
 
@@ -124,15 +161,23 @@ namespace MicroserviceRestApi.Migrations
                         });
                 });
 
+            modelBuilder.Entity("MicroserviceRestApi.Models.Exercises", b =>
+                {
+                    b.HasOne("MicroserviceRestApi.Models.Pupils", null)
+                        .WithMany("ExercisesList")
+                        .HasForeignKey("PupilsId");
+                });
+
             modelBuilder.Entity("MicroserviceRestApi.Models.Pupils", b =>
                 {
-                    b.HasOne("MicroserviceRestApi.Models.Trainers", "Trainer")
+                    b.HasOne("MicroserviceRestApi.Models.Trainers", null)
                         .WithMany("PupilsList")
-                        .HasForeignKey("TrainerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TrainersId");
+                });
 
-                    b.Navigation("Trainer");
+            modelBuilder.Entity("MicroserviceRestApi.Models.Pupils", b =>
+                {
+                    b.Navigation("ExercisesList");
                 });
 
             modelBuilder.Entity("MicroserviceRestApi.Models.Trainers", b =>

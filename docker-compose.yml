@@ -15,12 +15,6 @@ services:
       app-network:
         aliases:
           - microservicerestapi
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://microservicerestapi:80/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
     restart: always
 
   microservicepdfgenerator:
@@ -38,12 +32,6 @@ services:
       app-network:
         aliases:
           - microservicepdfgenerator
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://microservicepdfgenerator/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
     restart: always
 
   microserviceweb:
@@ -62,12 +50,6 @@ services:
       app-network:
         aliases:
           - microserviceweb
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://microserviceweb:80/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
     restart: always
 
   database:
@@ -84,12 +66,6 @@ services:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - app-network
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "postgres"]
-      interval: 30s 
-      timeout: 10s
-      retries: 3
-      start_period: 10s
     restart: always
 
 networks:

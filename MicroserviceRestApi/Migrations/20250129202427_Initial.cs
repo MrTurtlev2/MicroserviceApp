@@ -8,7 +8,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MicroserviceRestApi.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -49,17 +49,26 @@ namespace MicroserviceRestApi.Migrations
                     Name = table.Column<string>(type: "text", nullable: true),
                     Email = table.Column<string>(type: "text", nullable: false),
                     Password = table.Column<string>(type: "text", nullable: false),
-                    TrainerId = table.Column<int>(type: "integer", nullable: false)
+                    TrainerId = table.Column<int>(type: "integer", nullable: false),
+                    TrainersId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Pupils", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Pupils_Trainers_TrainerId",
-                        column: x => x.TrainerId,
+                        name: "FK_Pupils_Trainers_TrainersId",
+                        column: x => x.TrainersId,
                         principalTable: "Trainers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.InsertData(
+                table: "Pupils",
+                columns: new[] { "Id", "Email", "Name", "Password", "TrainerId", "TrainersId" },
+                values: new object[,]
+                {
+                    { 1, "mike.johnson@example.com", "Mike Johnson", "password789", 1, null },
+                    { 2, "emily.davis@example.com", "Emily Davis", "password101", 2, null }
                 });
 
             migrationBuilder.InsertData(
@@ -71,19 +80,10 @@ namespace MicroserviceRestApi.Migrations
                     { 2, "jane.smith@example.com", "Jane Smith", "password456" }
                 });
 
-            migrationBuilder.InsertData(
-                table: "Pupils",
-                columns: new[] { "Id", "Email", "Name", "Password", "TrainerId" },
-                values: new object[,]
-                {
-                    { 1, "mike.johnson@example.com", "Mike Johnson", "password789", 1 },
-                    { 2, "emily.davis@example.com", "Emily Davis", "password101", 2 }
-                });
-
             migrationBuilder.CreateIndex(
-                name: "IX_Pupils_TrainerId",
+                name: "IX_Pupils_TrainersId",
                 table: "Pupils",
-                column: "TrainerId");
+                column: "TrainersId");
         }
 
         /// <inheritdoc />

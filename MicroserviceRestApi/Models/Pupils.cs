@@ -14,6 +14,7 @@ namespace MicroserviceRestApi.Models
         public required string Password { get; set; }
 
         public int TrainerId { get; set; }
-        public Trainers? Trainer { get; set; } 
+        public ICollection<Exercises>? ExercisesList { get; set; }
+
     }
 }
