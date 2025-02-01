@@ -1,43 +1,70 @@
 ﻿@page
-@model Dashboard  
+@model MicroserviceWeb.Pages.DashboardModel
 @{
     ViewData["Title"] = "Dashboard";
-    var users = new[]
-         {
-        new { Name = "Jan Kowalski", ImageUrl = "~/images/jan.jpg", Info = "Trener personalny, 5 lat doświadczenia" },
-        new { Name = "Anna Nowak", ImageUrl = "~/images/anna.jpg", Info = "Dietetyk, specjalista ds. żywienia" },
-        new { Name = "Piotr Zieliński", ImageUrl = "~/images/piotr.jpg", Info = "Fizjoterapeuta, specjalista od urazów sportowych" }
-    }; 
 }
+
 @section Scripts {
     <script>
-        const tiles = document.querySelectorAll('.tile');
+        async function fetchPupils() {
+            try {
+                const response = await fetch('http://localhost:5000/api/trainers/1/all-pupils', {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                    },
+                });
 
-        tiles.forEach(tile => {
-            tile.addEventListener('click', function () {
-                const url = this.getAttribute('data-url');
-            
-                window.location.href = 'ExercisesEdit';
-                    console.log('klik')
-            });
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log("Odpowiedź z API:", data);
+
+                    const pupilsContainer = document.querySelector(".tiles-container");
+                    pupilsContainer.innerHTML = '';
+
+                    data.forEach(pupil => {
+                        const pupilElement = document.createElement('div');
+                        pupilElement.classList.add('tile');
+
+                        pupilElement.innerHTML = `
+                                            <img src="${pupil.imageUrl}" alt="${pupil.name}" class="user-image" />
+                                            <h3>${pupil.name}</h3>
+                                            <p>${pupil.info}</p>
+                                        `;
+                        pupilsContainer.appendChild(pupilElement);
+                    });
+                } else {
+                    console.error('Błąd odpowiedzi API:', response.statusText);
+                }
+            } catch (error) {
+                console.error("Błąd podczas zapytania:", error);
+            }
+        }
+
+        // Wywołanie funkcji fetchPupils po załadowaniu strony
+        document.addEventListener('DOMContentLoaded', function () {
+            fetchPupils();
         });
     </script>
 }
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <title>@ViewData["Title"]</title>
     <link rel="stylesheet" href="~/css/dashboard.css" />
 </head>
+
 <div class="dashboard-container">
-    <h1>Dashboard</h1>
+    <h1>@ViewData["Title"]</h1>
+
     <div class="tiles-container">
-        @foreach (var user in users)
+        @foreach (var pupil in Model.Pupils)
         {
             <div class="tile">
-                <img src="@Url.Content(user.ImageUrl)" alt="@user.Name" class="user-image" />
-                <h3>@user.Name</h3>
-                <p>@user.Info</p>
+                <img src="@Url.Content(pupil.ImageUrl)" alt="@pupil.Name" class="user-image" />
+                <h3>@pupil.Name</h3>
+                <p>@pupil.Info</p>
             </div>
         }
     </div>
