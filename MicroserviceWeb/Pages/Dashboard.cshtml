@@ -19,6 +19,7 @@
                     const data = await response.json();
                     console.log("Odpowiedź z API:", data);
 
+
                     const pupilsContainer = document.querySelector(".tiles-container");
                     pupilsContainer.innerHTML = '';
 
@@ -29,7 +30,7 @@
                         pupilElement.innerHTML = `
                                             <img src="${pupil.imageUrl}" alt="${pupil.name}" class="user-image" />
                                             <h3>${pupil.name}</h3>
-                                            <p>${pupil.info}</p>
+                                            <p>${pupil.email}</p>
                                         `;
                         pupilsContainer.appendChild(pupilElement);
                     });
@@ -57,7 +58,7 @@
 
 <div class="dashboard-container">
     <h1>@ViewData["Title"]</h1>
-
+     
     <div class="tiles-container">
         @foreach (var pupil in Model.Pupils)
         {
