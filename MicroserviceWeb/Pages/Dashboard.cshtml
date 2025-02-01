@@ -4,51 +4,6 @@
     ViewData["Title"] = "Dashboard";
 }
 
-@section Scripts {
-    <script>
-        async function fetchPupils() {
-            try {
-                const response = await fetch('http://localhost:5000/api/trainers/1/all-pupils', {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json',
-                    },
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log("Odpowiedź z API:", data);
-
-
-                    const pupilsContainer = document.querySelector(".tiles-container");
-                    pupilsContainer.innerHTML = '';
-
-                    data.forEach(pupil => {
-                        const pupilElement = document.createElement('div');
-                        pupilElement.classList.add('tile');
-
-                        pupilElement.innerHTML = `
-                                            <img src="${pupil.imageUrl}" alt="${pupil.name}" class="user-image" />
-                                            <h3>${pupil.name}</h3>
-                                            <p>${pupil.email}</p>
-                                        `;
-                        pupilsContainer.appendChild(pupilElement);
-                    });
-                } else {
-                    console.error('Błąd odpowiedzi API:', response.statusText);
-                }
-            } catch (error) {
-                console.error("Błąd podczas zapytania:", error);
-            }
-        }
-
-        // Wywołanie funkcji fetchPupils po załadowaniu strony
-        document.addEventListener('DOMContentLoaded', function () {
-            fetchPupils();
-        });
-    </script>
-}
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -58,7 +13,7 @@
 
 <div class="dashboard-container">
     <h1>@ViewData["Title"]</h1>
-     
+
     <div class="tiles-container">
         @foreach (var pupil in Model.Pupils)
         {
@@ -70,3 +25,7 @@
         }
     </div>
 </div>
+
+@section Scripts {
+    <script src="~/js/dashboard.js"></script>
+}
