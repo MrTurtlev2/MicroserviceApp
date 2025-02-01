@@ -31,7 +31,7 @@ namespace MicroservicePdfGenerator
 
 
             app.MapControllers();
-            app.MapHealthChecks("/health");
+           // app.MapHealthChecks("/health");
 
 
             app.Run();
