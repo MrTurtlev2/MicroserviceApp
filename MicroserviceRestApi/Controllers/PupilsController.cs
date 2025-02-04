@@ -23,14 +23,11 @@ namespace MicroserviceRestApi.Controllers
                 .ToListAsync();
             
                
-
-            // Jeśli brak wyników, zwróć 404
             if (!pupils.Any())
             {
                 return NotFound($"No pupils found for trainer with ID {pupilId}.");
             }
 
-            // Zwrócenie uczniów
             return Ok(pupils); 
         }
     }

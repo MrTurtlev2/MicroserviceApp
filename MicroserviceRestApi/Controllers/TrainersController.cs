@@ -22,13 +22,11 @@ namespace MicroserviceRestApi.Controllers
                 .Where(p => p.TrainerId == trainerId)
                 .ToListAsync();
 
-            // Jeśli brak wyników, zwróć 404
             if (!pupils.Any())
             {
                 return NotFound($"No pupils found for trainer with ID {trainerId}.");
             }
 
-            // Zwrócenie uczniów
             return Ok(pupils);
         }
     }

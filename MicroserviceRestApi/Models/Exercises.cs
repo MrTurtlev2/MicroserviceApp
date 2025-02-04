@@ -9,5 +9,6 @@ public class Exercises
     public string? Comment { get; set; }
 
     // Relacja z Pupil
+    public Pupils? Pupil { get; set; }
     public int PupilId { get; set; }  // Klucz obcy
 }
