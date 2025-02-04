@@ -7,7 +7,7 @@
     <script>
         async function fetchExercises(pupilId) {
             try {
-                const response = await fetch(`http://localhost:5000/api/pupils/${pupilId}/exercises`, {
+                const response = await fetch(`http://localhost:5000/api/1/exercises/exercises-by-pupil?pupilId=${pupilId}`, {
                     method: 'GET',
                     headers: { 'Accept': 'application/json' }
                 });
@@ -20,17 +20,17 @@
                     exercises.forEach((exercise, index) => {
                         const newRow = document.createElement('tr');
                         newRow.innerHTML = `
-                                <td>${index + 1}</td>
-                                <td><input type="text" value="${exercise.label}"></td>
-                                <td><input type="text" value="${exercise.weight}"></td>
-                                <td><input type="text" value="${exercise.reps}"></td>
-                                <td><input type="text" value="${exercise.comment}"></td>
-                                <td><button class="delete-row">Usuń</button></td>
-                            `;
+                            <td>${index + 1}</td>
+                            <td><input type="text" value="${exercise.label}"></td>
+                            <td><input type="text" value="${exercise.weight}"></td>
+                            <td><input type="text" value="${exercise.reps}"></td>
+                            <td><input type="text" value="${exercise.comment}"></td>
+                            <td><button class="delete-row">Usuń</button></td>
+                        `;
                         tableBody.appendChild(newRow);
                     });
 
-                    attachDeleteHandlers(); // Obsługa usuwania wierszy
+                    attachDeleteHandlers();
                 } else {
                     console.error('Błąd odpowiedzi API:', response.statusText);
                 }
@@ -39,7 +39,6 @@
             }
         }
 
-        // Funkcja do dodawania nowego wiersza do tabeli
         function addNewRow() {
             const tableBody = document.querySelector('table tbody');
             const newRow = document.createElement('tr');
