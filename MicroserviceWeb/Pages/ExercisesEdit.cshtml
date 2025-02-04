@@ -7,7 +7,7 @@
     <script>
         async function fetchExercises(pupilId) {
             try {
-                const response = await fetch(`http://localhost:5000/api/${pupilId}/exercises/exercises-by-pupil`, {
+                const response = await fetch(`http://localhost:5000/api/pupils/${pupilId}/exercises`, {
                     method: 'GET',
                     headers: { 'Accept': 'application/json' }
                 });
@@ -20,13 +20,13 @@
                     exercises.forEach((exercise, index) => {
                         const newRow = document.createElement('tr');
                         newRow.innerHTML = `
-                                            <td>${index + 1}</td>
-                                            <td><input type="text" value="${exercise.label}"></td>
-                                            <td><input type="text" value="${exercise.weight}"></td>
-                                            <td><input type="text" value="${exercise.reps}"></td>
-                                            <td><input type="text" value="${exercise.comment}"></td>
-                                            <td><button class="delete-row">Usuń</button></td>
-                                        `;
+                                <td>${index + 1}</td>
+                                <td><input type="text" value="${exercise.label}"></td>
+                                <td><input type="text" value="${exercise.weight}"></td>
+                                <td><input type="text" value="${exercise.reps}"></td>
+                                <td><input type="text" value="${exercise.comment}"></td>
+                                <td><button class="delete-row">Usuń</button></td>
+                            `;
                         tableBody.appendChild(newRow);
                     });
 
@@ -39,6 +39,25 @@
             }
         }
 
+        // Funkcja do dodawania nowego wiersza do tabeli
+        function addNewRow() {
+            const tableBody = document.querySelector('table tbody');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                    <td></td> <!-- Numer wiersza zostanie ustawiony dynamicznie -->
+                    <td><input type="text" placeholder="Wpisz ćwiczenie"></td>
+                    <td><input type="text" placeholder="Obciążenie"></td>
+                    <td><input type="text" placeholder="Powtórzenia"></td>
+                    <td><input type="text" placeholder="Uwagi"></td>
+                    <td><button class="delete-row">Usuń</button></td>
+                `;
+            tableBody.appendChild(newRow);
+
+            attachDeleteHandlers(); // Dodaj obsługę usuwania dla nowego wiersza
+            updateRowNumbers(); // Zaktualizuj numery wierszy
+        }
+
+        // Funkcja do usuwania wiersza
         function attachDeleteHandlers() {
             document.querySelectorAll('.delete-row').forEach(button => {
                 button.addEventListener('click', () => {
@@ -48,12 +67,14 @@
             });
         }
 
+        // Funkcja do aktualizacji numerów wierszy
         function updateRowNumbers() {
             document.querySelectorAll('table tbody tr').forEach((row, index) => {
                 row.firstElementChild.textContent = index + 1;
             });
         }
 
+        // Funkcja do zapisania ćwiczeń
         async function saveExercises(pupilId) {
             const tableBody = document.querySelector('table tbody');
             const rows = tableBody.querySelectorAll('tr');
@@ -70,15 +91,16 @@
             });
 
             try {
+                // Wyślij dane na odpowiedni endpoint API
                 const response = await fetch(`http://localhost:5000/api/${pupilId}/exercises/add`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(exercises)
+                    body: JSON.stringify(exercises) // Przekazujemy tablicę ćwiczeń
                 });
 
-                if (response.ok) { 
+                if (response.ok) {
                     alert("Ćwiczenia zapisane!");
                 } else {
                     console.error("Błąd zapisu ćwiczeń:", response.statusText);
@@ -88,15 +110,22 @@
             }
         }
 
+
         document.addEventListener('DOMContentLoaded', function () {
             const pupilId = @Model.PupilId;
             fetchExercises(pupilId);
+
+            // Obsługuje kliknięcie przycisku "Dodaj ćwiczenie"
+            document.querySelector('.add-row').addEventListener('click', function () {
+                addNewRow();
+            });
 
             document.querySelector('.save-changes').addEventListener('click', function () {
                 saveExercises(pupilId);
             });
         });
     </script>
+
 }
 
 <div class="container">

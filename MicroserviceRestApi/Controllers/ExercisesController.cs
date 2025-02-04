@@ -33,19 +33,23 @@ namespace MicroserviceRestApi.Controllers
         }
 
         // Dodanie nowego ćwiczenia dla danego ucznia
-        [HttpGet("add")]
-        public async Task<IActionResult> AddExercise(int pupilId, [FromBody] Exercises exercise)
+        [HttpPost("add")]
+        public async Task<IActionResult> AddExercise(int pupilId, [FromBody] List<Exercises> exercises)
         {
-            if (exercise == null)
+            if (exercises == null || exercises.Count == 0)
             {
                 return BadRequest("Nieprawidłowe dane ćwiczenia.");
             }
 
-            exercise.PupilId = pupilId;
-            _context.Exercises.Add(exercise);
+            foreach (var exercise in exercises)
+            {
+                exercise.PupilId = pupilId;
+                _context.Exercises.Add(exercise);
+            }
+
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetExercises), new { pupilId }, exercise);
+            return Ok(new { message = "Ćwiczenia zostały zapisane!" });
         }
 
         // Edycja istniejącego ćwiczenia
