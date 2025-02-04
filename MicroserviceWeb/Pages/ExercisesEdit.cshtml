@@ -1,4 +1,4 @@
-﻿@page
+﻿@page "{id:int}"
 @model ExersiceModel
 @{
     ViewData["Title"] = "ExercisesEdit";
@@ -6,11 +6,8 @@
 
 @section Scripts {
     <script>
-        // Assuming you are passing PupilId from Razor to JS
-        const pupilId = @Model.PupilId;
-
-        // Function to fetch exercises from API
-        async function fetchExercises() {
+        // Fetch exercises for the given pupil ID
+        async function fetchExercises(pupilId) {
             try {
                 const response = await fetch(`http://localhost:5000/api/pupils/${pupilId}/exercises`, {
                     method: 'GET',
@@ -21,12 +18,12 @@
 
                 if (response.ok) {
                     const exercises = await response.json();
-                    const tableBody = document.querySelector('table tbody'); // Reference to the tbody element
+                    const tableBody = document.querySelector('table tbody');
 
-                    // Clear any existing rows (if any)
+                    // Clear existing rows
                     tableBody.innerHTML = '';
 
-                    // Iterate through each exercise and create a table row
+                    // Add rows dynamically based on fetched data
                     exercises.forEach((exercise, index) => {
                         const newRow = document.createElement('tr');
                         newRow.innerHTML = `
@@ -47,51 +44,30 @@
             }
         }
 
-        // Fetch exercises when the page loads
+        // Get the pupil ID from the Razor model and fetch exercises
         document.addEventListener('DOMContentLoaded', function () {
-            fetchExercises(); // Fetch exercises using pupilId
+            const pupilId = @Model.PupilId; // Injected from the Razor model
+            fetchExercises(pupilId); // Fetch exercises based on pupil ID
         });
 
-        // Function to handle delete row action
+        // Delete row functionality
         document.addEventListener('click', function (event) {
             if (event.target.classList.contains('delete-row')) {
-                event.target.closest('tr').remove(); // Remove the clicked row
+                event.target.closest('tr').remove();
             }
-        });
-
-        // Optionally, handle the "Add Exercise" button if needed:
-        document.querySelector('.add-row').addEventListener('click', function () {
-            const tableBody = document.querySelector('table tbody');
-            const newRow = document.createElement('tr');
-            newRow.innerHTML = `
-                        <td>${tableBody.rows.length + 1}</td>
-                        <td><input type="text" placeholder="Ćwiczenie"></td>
-                        <td><input type="text" placeholder="Obciążenie"></td>
-                        <td><input type="text" placeholder="Powtórzenia"></td>
-                        <td><input type="text" placeholder="Uwagi"></td>
-                        <td><button class="delete-row">Usuń</button></td>
-                    `;
-            tableBody.appendChild(newRow);
         });
     </script>
 }
 
 <div class="container">
     <header>
-        <h1>Plany Treningowe</h1>
+        <h1>Plany Treningowe</h1> 
     </header>
-    <section class="training-info">
-        <div class="info-box">
-            <h3>Tytuł: Redukcja tkanki tłuszczowej</h3>
-            <p>Podopieczny: Adam Nowak</p>
-            <p>Termin: 2023-05-16</p>
-        </div>
-    </section>
     <section class="training-table">
         <table>
             <thead>
                 <tr>
-                    <th>Część</th>
+                    <th>lp.</th>
                     <th>Ćwiczenie</th>
                     <th>Obciążenie</th>
                     <th>Powtórzenia</th>
