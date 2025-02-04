@@ -18,13 +18,17 @@
         @foreach (var pupil in Model.Pupils)
         {
             <div class="tile">
-                <img src="@Url.Content(pupil.ImageUrl)" alt="@pupil.Name" class="user-image" />
-                <h3>@pupil.Name</h3>
-                <p>@pupil.Info</p>
+                <!-- Adding the ID to the URL for navigation -->
+                <a href="@Url.Page("/ExercisesEdit", new { id = pupil.Id })">
+                    <img src="@Url.Content(pupil.ImageUrl)" alt="@pupil.Name" class="user-image" />
+                    <h3>@pupil.Name</h3>
+                    <p>@pupil.Info</p>
+                </a>
             </div>
         }
     </div>
 </div>
+
 
 @section Scripts {
     <script src="~/js/dashboard.js"></script>

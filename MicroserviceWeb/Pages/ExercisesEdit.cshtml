@@ -3,65 +3,79 @@
 @{
     ViewData["Title"] = "ExercisesEdit";
 }
+
 @section Scripts {
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        // Assuming you are passing PupilId from Razor to JS
+        const pupilId = @Model.PupilId;
+
+        // Function to fetch exercises from API
+        async function fetchExercises() {
+            try {
+                const response = await fetch(`http://localhost:5000/api/pupils/${pupilId}/exercises`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                    },
+                });
+
+                if (response.ok) {
+                    const exercises = await response.json();
+                    const tableBody = document.querySelector('table tbody'); // Reference to the tbody element
+
+                    // Clear any existing rows (if any)
+                    tableBody.innerHTML = '';
+
+                    // Iterate through each exercise and create a table row
+                    exercises.forEach((exercise, index) => {
+                        const newRow = document.createElement('tr');
+                        newRow.innerHTML = `
+                                    <td>${index + 1}</td>
+                                    <td><input type="text" value="${exercise.label}" disabled></td>
+                                    <td><input type="text" value="${exercise.weight}" disabled></td>
+                                    <td><input type="text" value="${exercise.reps}" disabled></td>
+                                    <td><input type="text" value="${exercise.comment}" disabled></td>
+                                    <td><button class="delete-row">Usuń</button></td>
+                                `;
+                        tableBody.appendChild(newRow);
+                    });
+                } else {
+                    console.error('Błąd odpowiedzi API:', response.statusText);
+                }
+            } catch (error) {
+                console.error("Błąd podczas zapytania:", error);
+            }
+        }
+
+        // Fetch exercises when the page loads
+        document.addEventListener('DOMContentLoaded', function () {
+            fetchExercises(); // Fetch exercises using pupilId
+        });
+
+        // Function to handle delete row action
+        document.addEventListener('click', function (event) {
+            if (event.target.classList.contains('delete-row')) {
+                event.target.closest('tr').remove(); // Remove the clicked row
+            }
+        });
+
+        // Optionally, handle the "Add Exercise" button if needed:
+        document.querySelector('.add-row').addEventListener('click', function () {
             const tableBody = document.querySelector('table tbody');
-            const addRowButton = document.querySelector('.add-row');
-            const saveChangesButton = document.querySelector('.save-changes');
-
-            addRowButton.addEventListener('click', () => {
-                const newRow = document.createElement('tr');
-                newRow.innerHTML = `
-                    <td>${tableBody.rows.length + 1}</td>
-                    <td><input type="text" placeholder="Ćwiczenie"></td>
-                    <td><input type="text" placeholder="Obciążenie"></td>
-                    <td><input type="text" placeholder="Powtórzenia"></td>
-                    <td><input type="text" placeholder="Uwagi"></td>
-                    <td><button class="delete-row">Usuń</button></td>
-                `;
-                tableBody.appendChild(newRow);
-                attachDeleteHandlers();
-            });
-
-            function attachDeleteHandlers() {
-                document.querySelectorAll('.delete-row').forEach(button => {
-                    button.addEventListener('click', () => {
-                        button.parentElement.parentElement.remove();
-                        updateRowNumbers();
-                    });
-                });
-            }
-
-            function updateRowNumbers() {
-                const rows = tableBody.querySelectorAll('tr');
-                rows.forEach((row, index) => {
-                    row.firstElementChild.textContent = index + 1;
-                });
-            }
-
-            saveChangesButton.addEventListener('click', () => {
-                const data = [];
-                const rows = tableBody.querySelectorAll('tr');
-                rows.forEach(row => {
-                    const cells = row.querySelectorAll('td');
-                    data.push({
-                         part: cells[0].textContent,
-                        exercise: cells[1].querySelector('input').value,
-                        weight: cells[2].querySelector('input').value,
-                        reps: cells[3].querySelector('input').value,
-                        notes: cells[4].querySelector('input').value,
-                    });
-                });
-                console.log('Saved Data:', data);
-                alert('Zmiany zostały zapisane!');
-            });
-
-            attachDeleteHandlers();
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                        <td>${tableBody.rows.length + 1}</td>
+                        <td><input type="text" placeholder="Ćwiczenie"></td>
+                        <td><input type="text" placeholder="Obciążenie"></td>
+                        <td><input type="text" placeholder="Powtórzenia"></td>
+                        <td><input type="text" placeholder="Uwagi"></td>
+                        <td><button class="delete-row">Usuń</button></td>
+                    `;
+            tableBody.appendChild(newRow);
         });
     </script>
-     
 }
+
 <div class="container">
     <header>
         <h1>Plany Treningowe</h1>
@@ -86,20 +100,10 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>1</td>
-                    <td><input type="text" value="Przysiad ze sztangą"></td>
-                    <td><input type="text" value="50 kg"></td>
-                    <td><input type="text" value="12"></td>
-                    <td><input type="text" value="Technika poprawna"></td>
-                    <td><button class="delete-row">Usuń</button></td>
-                </tr>
+                <!-- Dynamic rows will be inserted here -->
             </tbody>
         </table>
         <button class="add-row">Dodaj ćwiczenie</button>
         <button class="save-changes">Zapisz zmiany</button>
     </section>
 </div>
-
-</div>
-  
