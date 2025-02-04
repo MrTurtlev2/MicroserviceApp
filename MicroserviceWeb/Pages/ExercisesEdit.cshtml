@@ -3,39 +3,34 @@
 @{
     ViewData["Title"] = "ExercisesEdit";
 }
-
 @section Scripts {
     <script>
-        // Fetch exercises for the given pupil ID
         async function fetchExercises(pupilId) {
             try {
-                const response = await fetch(`http://localhost:5000/api/pupils/${pupilId}/exercises`, {
+                const response = await fetch(`http://localhost:5000/api/${pupilId}/exercises/exercises-by-pupil`, {
                     method: 'GET',
-                    headers: {
-                        'Accept': 'application/json',
-                    },
+                    headers: { 'Accept': 'application/json' }
                 });
 
                 if (response.ok) {
                     const exercises = await response.json();
                     const tableBody = document.querySelector('table tbody');
+                    tableBody.innerHTML = ''; // Wyczyść tabelę
 
-                    // Clear existing rows
-                    tableBody.innerHTML = '';
-
-                    // Add rows dynamically based on fetched data
                     exercises.forEach((exercise, index) => {
                         const newRow = document.createElement('tr');
                         newRow.innerHTML = `
-                                    <td>${index + 1}</td>
-                                    <td><input type="text" value="${exercise.label}" disabled></td>
-                                    <td><input type="text" value="${exercise.weight}" disabled></td>
-                                    <td><input type="text" value="${exercise.reps}" disabled></td>
-                                    <td><input type="text" value="${exercise.comment}" disabled></td>
-                                    <td><button class="delete-row">Usuń</button></td>
-                                `;
+                                            <td>${index + 1}</td>
+                                            <td><input type="text" value="${exercise.label}"></td>
+                                            <td><input type="text" value="${exercise.weight}"></td>
+                                            <td><input type="text" value="${exercise.reps}"></td>
+                                            <td><input type="text" value="${exercise.comment}"></td>
+                                            <td><button class="delete-row">Usuń</button></td>
+                                        `;
                         tableBody.appendChild(newRow);
                     });
+
+                    attachDeleteHandlers(); // Obsługa usuwania wierszy
                 } else {
                     console.error('Błąd odpowiedzi API:', response.statusText);
                 }
@@ -44,30 +39,75 @@
             }
         }
 
-        // Get the pupil ID from the Razor model and fetch exercises
-        document.addEventListener('DOMContentLoaded', function () {
-            const pupilId = @Model.PupilId; // Injected from the Razor model
-            fetchExercises(pupilId); // Fetch exercises based on pupil ID
-        });
+        function attachDeleteHandlers() {
+            document.querySelectorAll('.delete-row').forEach(button => {
+                button.addEventListener('click', () => {
+                    button.closest('tr').remove();
+                    updateRowNumbers();
+                });
+            });
+        }
 
-        // Delete row functionality
-        document.addEventListener('click', function (event) {
-            if (event.target.classList.contains('delete-row')) {
-                event.target.closest('tr').remove();
+        function updateRowNumbers() {
+            document.querySelectorAll('table tbody tr').forEach((row, index) => {
+                row.firstElementChild.textContent = index + 1;
+            });
+        }
+
+        async function saveExercises(pupilId) {
+            const tableBody = document.querySelector('table tbody');
+            const rows = tableBody.querySelectorAll('tr');
+            let exercises = [];
+
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                exercises.push({
+                    label: cells[1].querySelector('input').value,
+                    weight: cells[2].querySelector('input').value,
+                    reps: parseInt(cells[3].querySelector('input').value),
+                    comment: cells[4].querySelector('input').value
+                });
+            });
+
+            try {
+                const response = await fetch(`http://localhost:5000/api/${pupilId}/exercises/add`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(exercises)
+                });
+
+                if (response.ok) { 
+                    alert("Ćwiczenia zapisane!");
+                } else {
+                    console.error("Błąd zapisu ćwiczeń:", response.statusText);
+                }
+            } catch (error) {
+                console.error("Błąd podczas zapisu:", error);
             }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const pupilId = @Model.PupilId;
+            fetchExercises(pupilId);
+
+            document.querySelector('.save-changes').addEventListener('click', function () {
+                saveExercises(pupilId);
+            });
         });
     </script>
 }
 
 <div class="container">
     <header>
-        <h1>Plany Treningowe</h1> 
+        <h1>Plany Treningowe</h1>
     </header>
     <section class="training-table">
         <table>
             <thead>
                 <tr>
-                    <th>lp.</th>
+                    <th>Część</th>
                     <th>Ćwiczenie</th>
                     <th>Obciążenie</th>
                     <th>Powtórzenia</th>
@@ -75,9 +115,7 @@
                     <th>Akcje</th>
                 </tr>
             </thead>
-            <tbody>
-                <!-- Dynamic rows will be inserted here -->
-            </tbody>
+            <tbody></tbody>
         </table>
         <button class="add-row">Dodaj ćwiczenie</button>
         <button class="save-changes">Zapisz zmiany</button>
