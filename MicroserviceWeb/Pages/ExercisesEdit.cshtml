@@ -15,24 +15,23 @@
                 if (response.ok) {
                     const exercises = await response.json();
                     const tableBody = document.querySelector('table tbody');
-                    tableBody.innerHTML = ''; // Wyczyść tabelę
+                    tableBody.innerHTML = '';
 
                     exercises.forEach((exercise, index) => {
                         const newRow = document.createElement('tr');
+                        newRow.dataset.exerciseId = exercise.id;
                         newRow.innerHTML = `
-                            <td>${index + 1}</td>
-                            <td><input type="text" value="${exercise.label}"></td>
-                            <td><input type="text" value="${exercise.weight}"></td>
-                            <td><input type="text" value="${exercise.reps}"></td>
-                            <td><input type="text" value="${exercise.comment}"></td>
-                            <td><button class="delete-row">Usuń</button></td>
-                        `;
+                                    <td>${index + 1}</td>
+                                    <td><input type="text" value="${exercise.label}"></td>
+                                    <td><input type="text" value="${exercise.weight}"></td>
+                                    <td><input type="text" value="${exercise.reps}"></td>
+                                    <td><input type="text" value="${exercise.comment}"></td>
+                                    <td><button class="delete-row">Usuń</button></td>
+                                `;
                         tableBody.appendChild(newRow);
                     });
 
                     attachDeleteHandlers();
-                } else {
-                    console.error('Błąd odpowiedzi API:', response.statusText);
                 }
             } catch (error) {
                 console.error("Błąd podczas zapytania:", error);
@@ -43,37 +42,50 @@
             const tableBody = document.querySelector('table tbody');
             const newRow = document.createElement('tr');
             newRow.innerHTML = `
-                    <td></td> <!-- Numer wiersza zostanie ustawiony dynamicznie -->
-                    <td><input type="text" placeholder="Wpisz ćwiczenie"></td>
-                    <td><input type="text" placeholder="Obciążenie"></td>
-                    <td><input type="text" placeholder="Powtórzenia"></td>
-                    <td><input type="text" placeholder="Uwagi"></td>
-                    <td><button class="delete-row">Usuń</button></td>
-                `;
+                            <td></td>
+                            <td><input type="text" placeholder="Wpisz ćwiczenie"></td>
+                            <td><input type="text" placeholder="Obciążenie"></td>
+                            <td><input type="text" placeholder="Powtórzenia"></td>
+                            <td><input type="text" placeholder="Uwagi"></td>
+                            <td><button class="delete-row">Usuń</button></td>
+                        `;
             tableBody.appendChild(newRow);
-
-            attachDeleteHandlers(); // Dodaj obsługę usuwania dla nowego wiersza
-            updateRowNumbers(); // Zaktualizuj numery wierszy
+            attachDeleteHandlers();
+            updateRowNumbers();
         }
 
-        // Funkcja do usuwania wiersza
         function attachDeleteHandlers() {
             document.querySelectorAll('.delete-row').forEach(button => {
-                button.addEventListener('click', () => {
-                    button.closest('tr').remove();
-                    updateRowNumbers();
+                button.addEventListener('click', async (event) => {
+                    const row = button.closest('tr');
+                    const exerciseId = row.dataset.exerciseId;
+
+                    try {
+                        const pupilId = @Model.PupilId;
+                        const response = await fetch(`http://localhost:5000/api/${pupilId}/exercises/${exerciseId}/delete`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        });
+
+                        if (response.ok) {
+                            row.remove();
+                            updateRowNumbers();
+                        }
+                    } catch (error) {
+                        console.error("Błąd podczas zapytania:", error);
+                    }
                 });
             });
         }
 
-        // Funkcja do aktualizacji numerów wierszy
         function updateRowNumbers() {
             document.querySelectorAll('table tbody tr').forEach((row, index) => {
                 row.firstElementChild.textContent = index + 1;
             });
         }
 
-        // Funkcja do zapisania ćwiczeń
         async function saveExercises(pupilId) {
             const tableBody = document.querySelector('table tbody');
             const rows = tableBody.querySelectorAll('tr');
@@ -90,31 +102,26 @@
             });
 
             try {
-                // Wyślij dane na odpowiedni endpoint API
                 const response = await fetch(`http://localhost:5000/api/${pupilId}/exercises/add`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(exercises) // Przekazujemy tablicę ćwiczeń
+                    body: JSON.stringify(exercises)
                 });
 
                 if (response.ok) {
                     alert("Ćwiczenia zapisane!");
-                } else {
-                    console.error("Błąd zapisu ćwiczeń:", response.statusText);
                 }
             } catch (error) {
                 console.error("Błąd podczas zapisu:", error);
             }
         }
 
-
         document.addEventListener('DOMContentLoaded', function () {
             const pupilId = @Model.PupilId;
             fetchExercises(pupilId);
 
-            // Obsługuje kliknięcie przycisku "Dodaj ćwiczenie"
             document.querySelector('.add-row').addEventListener('click', function () {
                 addNewRow();
             });
@@ -124,7 +131,6 @@
             });
         });
     </script>
-
 }
 
 <div class="container">

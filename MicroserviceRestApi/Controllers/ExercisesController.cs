@@ -24,7 +24,6 @@ namespace MicroserviceRestApi.Controllers
                 .Where(e => e.PupilId == pupilId)
                 .AsNoTracking()
                 .ToListAsync();
-            Console.WriteLine($"Znaleziono {exercises} ćwiczeń dla ucznia o ID {pupilId}.");
 
 
             if (exercises == null || exercises.Count == 0)
