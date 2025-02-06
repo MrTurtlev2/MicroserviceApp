@@ -18,6 +18,8 @@ services:
   microservicepdfgenerator:
     build: ./MicroservicePdfGenerator
     container_name: microservicepdfgenerator
+    ports:
+      - "5001:5001"
     depends_on:
       - database
     environment:

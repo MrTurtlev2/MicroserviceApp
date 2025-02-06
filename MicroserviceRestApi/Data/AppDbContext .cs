@@ -16,7 +16,7 @@ namespace MicroserviceRestApi.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Konfiguracja relacji jeden do wielu 
+           
             modelBuilder.Entity<Trainers>()
                 .HasMany(t => t.PupilsList);
 
