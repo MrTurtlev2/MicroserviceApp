@@ -18,6 +18,8 @@ namespace MicroservicePdfGenerator.Controllers
             _context = context;
         }
 
+
+
         [HttpGet("all-trainers")]
         public IActionResult GeneratePdf()
         {
@@ -59,5 +61,53 @@ namespace MicroservicePdfGenerator.Controllers
                 return File(memoryStream.ToArray(), "application/pdf", "trainers-table.pdf");
             }
         }
+
+        [HttpGet("pupils-for-trainer/{trainerId}")]
+        public IActionResult GeneratePupilsPdf(int trainerId)
+        {
+            var trainer = _context.Trainers.FirstOrDefault(t => t.Id == trainerId);
+            if (trainer == null)
+            {
+                return NotFound($"Trainer with ID {trainerId} not found.");
+            }
+
+            var pupils = _context.Pupils.Where(p => p.TrainerId == trainerId).ToList();
+
+            string message = $"Lista uczniów dla trenera {trainer.Name}";
+
+            using (var memoryStream = new MemoryStream())
+            {
+                var document = new PdfDocument();
+                var page = document.AddPage();
+                var gfx = XGraphics.FromPdfPage(page);
+
+                var font = new XFont("Roboto Condensed", 12);
+
+                gfx.DrawString(message, font, XBrushes.Black, new XPoint(40, 40));
+
+                double yPoint = 80;
+                var headerFont = new XFont("Roboto Condensed", 12, XFontStyle.Bold);
+                var tableFont = new XFont("Roboto Condensed", 10);
+
+                gfx.DrawString("ID", headerFont, XBrushes.Black, new XPoint(40, yPoint));
+                gfx.DrawString("Name", headerFont, XBrushes.Black, new XPoint(100, yPoint));
+                gfx.DrawString("Email", headerFont, XBrushes.Black, new XPoint(250, yPoint));
+                yPoint += 20;
+
+                foreach (var pupil in pupils)
+                {
+                    gfx.DrawString(pupil.Id.ToString(), tableFont, XBrushes.Black, new XPoint(40, yPoint));
+                    gfx.DrawString(pupil.Name, tableFont, XBrushes.Black, new XPoint(100, yPoint));
+                    gfx.DrawString(pupil.Email, tableFont, XBrushes.Black, new XPoint(250, yPoint));
+                    yPoint += 20;
+                }
+
+                document.Save(memoryStream, false);
+
+                return File(memoryStream.ToArray(), "application/pdf", $"{trainer.Name}_pupils.pdf");
+            }
+        }
+
+
     }
 }
