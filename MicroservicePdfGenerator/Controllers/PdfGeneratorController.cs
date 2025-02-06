@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using MicroservicePdfGenerator.Data;
-using iText.Kernel.Pdf;
-using iText.Layout;
-using iText.Layout.Element;
+﻿using PdfSharpCore.Pdf;
+using PdfSharpCore.Drawing;
+using Microsoft.AspNetCore.Mvc;
 using System.IO;
 
 namespace MicroservicePdfGenerator.Controllers
@@ -11,36 +9,24 @@ namespace MicroservicePdfGenerator.Controllers
     [Route("api/[controller]")]
     public class PdfController : ControllerBase
     {
-        private readonly AppDbContext _context;
-
-        public PdfController(AppDbContext context)
-        {
-            _context = context;
-        }
-
         [HttpGet("generate-pdf")]
         public IActionResult GeneratePdf()
         {
-            // Tekst do dodania do PDF
             string message = "Ćwiczenia zostały zapisane!";
+            string fontPath = "/usr/share/fonts/truetype/roboto/Roboto_Condensed-Light.ttf";
 
-            // Tworzenie strumienia do zapisu PDF
             using (var memoryStream = new MemoryStream())
             {
-                // Tworzymy dokument PDF
-                using (var writer = new PdfWriter(memoryStream))
-                using (var pdf = new PdfDocument(writer))
-                {
-                    var document = new Document(pdf);
+                var document = new PdfDocument();
+                var page = document.AddPage();
+                var gfx = XGraphics.FromPdfPage(page);
 
-                    // Dodajemy tekst do dokumentu
-                    document.Add(new Paragraph(message));
+                var font = new XFont(fontPath, 12, XFontStyle.Regular);
 
-                    // Zapisujemy dokument PDF do strumienia
-                    document.Close();
-                }
+                gfx.DrawString(message, font, XBrushes.Black, new XPoint(40, 40));
 
-                // Zwracamy PDF jako plik
+                document.Save(memoryStream, false);
+
                 return File(memoryStream.ToArray(), "application/pdf", "generated-file.pdf");
             }
         }
