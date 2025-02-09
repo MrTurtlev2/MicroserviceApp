@@ -163,6 +163,29 @@ namespace MicroservicePdfGenerator.Controllers
             }
         }
 
+        [HttpGet("reports")]
+        public IActionResult GetReports()
+        {
+            string reportsDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Raports");
+
+            if (!Directory.Exists(reportsDirectory))
+            {
+                return NotFound("Folder z raportami nie istnieje.");
+            }
+
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/Raports/";
+
+            var files = Directory.GetFiles(reportsDirectory, "*.pdf")
+                                 .Select(file => new
+                                 {
+                                     FileName = Path.GetFileName(file),
+                                     Url = $"{baseUrl}{Path.GetFileName(file)}"
+                                 })
+                                 .ToList();
+
+            return Ok(files);
+        }
+
 
 
 
