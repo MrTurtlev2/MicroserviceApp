@@ -34,7 +34,7 @@ namespace MicroserviceRestApi.Controllers
             return Ok(exercises);
         }
 
-      
+
         [HttpPost("add")]
         public async Task<IActionResult> AddExercise(int pupilId, [FromBody] List<Exercises> exercises)
         {
@@ -43,17 +43,37 @@ namespace MicroserviceRestApi.Controllers
                 return BadRequest("Nieprawidłowe dane ćwiczenia.");
             }
 
+            var existingExercises = await _context.Exercises
+                                                   .Where(e => e.PupilId == pupilId)
+                                                   .ToListAsync();
+
+            var newExercises = new List<Exercises>();
+
             foreach (var exercise in exercises)
             {
-               
-                exercise.PupilId = pupilId;
-                _context.Exercises.Add(exercise); 
+                var existingExercise = existingExercises.FirstOrDefault(e => e.Label == exercise.Label
+                                                                           && e.Weight == exercise.Weight
+                                                                           && e.Reps == exercise.Reps
+                                                                           && e.Comment == exercise.Comment);
+                if (existingExercise == null)  
+                {
+                    exercise.PupilId = pupilId;
+                    newExercises.Add(exercise);
+                }
             }
 
-            await _context.SaveChangesAsync(); 
-
-            return Ok(new { message = "Ćwiczenia zostały zapisane!" });
+            if (newExercises.Any())
+            {
+                await _context.Exercises.AddRangeAsync(newExercises);
+                await _context.SaveChangesAsync();
+                return Ok(new { message = "Nowe ćwiczenia zostały zapisane!" });
+            }
+            else
+            {
+                return Ok(new { message = "Brak nowych ćwiczeń do zapisania!" });
+            }
         }
+
 
 
 
