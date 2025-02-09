@@ -7,6 +7,7 @@ using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.Layout.Element;
 using System.IO;
+using Microsoft.Extensions.FileProviders;
 
 namespace MicroservicePdfGenerator
 {
@@ -43,6 +44,12 @@ namespace MicroservicePdfGenerator
             builder.Services.AddHealthChecks();
             builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
             var app = builder.Build();
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Raports")),
+                RequestPath = "/raports"
+            });
 
 
             app.UseHttpsRedirection();
