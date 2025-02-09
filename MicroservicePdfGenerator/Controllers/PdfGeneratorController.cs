@@ -108,6 +108,53 @@ namespace MicroservicePdfGenerator.Controllers
             }
         }
 
+        [HttpGet("all-pupils")]
+        public IActionResult GenerateAllPupilsPdf()
+        {
+            var pupils = _context.Pupils.ToList();
+
+            if (!pupils.Any())
+            {
+                return NotFound("Brak zapisanych uczniów.");
+            }
+
+            string message = "Lista wszystkich uczniów";
+
+            using (var memoryStream = new MemoryStream())
+            {
+                var document = new PdfDocument();
+                var page = document.AddPage();
+                var gfx = XGraphics.FromPdfPage(page);
+
+                var font = new XFont("Roboto Condensed", 12);
+                var headerFont = new XFont("Roboto Condensed", 12, XFontStyle.Bold);
+                var tableFont = new XFont("Roboto Condensed", 10);
+
+                gfx.DrawString(message, font, XBrushes.Black, new XPoint(40, 40));
+
+                double yPoint = 80;
+
+                gfx.DrawString("ID", headerFont, XBrushes.Black, new XPoint(40, yPoint));
+                gfx.DrawString("Name", headerFont, XBrushes.Black, new XPoint(100, yPoint));
+                gfx.DrawString("Email", headerFont, XBrushes.Black, new XPoint(250, yPoint));
+                yPoint += 20;
+
+                foreach (var pupil in pupils)
+                {
+                    gfx.DrawString(pupil.Id.ToString(), tableFont, XBrushes.Black, new XPoint(40, yPoint));
+                    gfx.DrawString(pupil.Name, tableFont, XBrushes.Black, new XPoint(100, yPoint));
+                    gfx.DrawString(pupil.Email, tableFont, XBrushes.Black, new XPoint(250, yPoint));
+                    gfx.DrawString(pupil.TrainerId.ToString(), tableFont, XBrushes.Black, new XPoint(400, yPoint));
+                    yPoint += 20;
+                }
+
+                document.Save(memoryStream, false);
+
+                return File(memoryStream.ToArray(), "application/pdf", "all_pupils.pdf");
+            }
+        }
+
+
 
     }
 }
