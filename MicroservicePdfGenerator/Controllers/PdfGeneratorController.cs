@@ -109,7 +109,7 @@ namespace MicroservicePdfGenerator.Controllers
         }
 
         [HttpGet("all-pupils")]
-        public IActionResult GenerateAllPupilsPdf()
+        public IActionResult GenerateAndSaveAllPupilsPdf()
         {
             var pupils = _context.Pupils.ToList();
 
@@ -137,6 +137,7 @@ namespace MicroservicePdfGenerator.Controllers
                 gfx.DrawString("ID", headerFont, XBrushes.Black, new XPoint(40, yPoint));
                 gfx.DrawString("Name", headerFont, XBrushes.Black, new XPoint(100, yPoint));
                 gfx.DrawString("Email", headerFont, XBrushes.Black, new XPoint(250, yPoint));
+              
                 yPoint += 20;
 
                 foreach (var pupil in pupils)
@@ -148,11 +149,20 @@ namespace MicroservicePdfGenerator.Controllers
                     yPoint += 20;
                 }
 
-                document.Save(memoryStream, false);
+                string timestamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
+                string fileName = $"pupils-raport-{timestamp}.pdf";
 
-                return File(memoryStream.ToArray(), "application/pdf", "all_pupils.pdf");
+
+                string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "Raports");
+                Directory.CreateDirectory(folderPath); 
+                string filePath = Path.Combine(folderPath, fileName);
+
+                document.Save(filePath);
+
+                return Ok($"Plik PDF zapisany: {filePath}");
             }
         }
+
 
 
 
