@@ -3,6 +3,8 @@ WORKDIR /app
 
 RUN apt-get update && apt-get install -y \
     fontconfig \
+    cron \
+    curl \
     && mkdir -p /usr/share/fonts/truetype/roboto
 COPY Fonts/Roboto_Condensed-Light.ttf /usr/share/fonts/truetype/roboto/
 RUN fc-cache -f -v
@@ -23,5 +25,12 @@ WORKDIR /app
 
 RUN mkdir -p /app/Raports
 
+COPY CronJobs/GenerateAllPupilsPdfCron /etc/cron.d/GenerateAllPupilsPdfCron
+
+RUN chmod 0644 /etc/cron.d/GenerateAllPupilsPdfCron \
+    && crontab /etc/cron.d/GenerateAllPupilsPdfCron \
+    && touch /var/log/cron.log \
+    && chmod 777 /var/log/cron.log
+
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "MicroservicePdfGenerator.dll"]
+CMD cron && dotnet MicroservicePdfGenerator.dll
